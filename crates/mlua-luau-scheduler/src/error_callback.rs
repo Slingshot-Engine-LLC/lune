@@ -1,4 +1,4 @@
-use std::{cell::RefCell, rc::Rc};
+use std::{cell::RefCell, sync::Arc};
 
 use mlua::prelude::*;
 
@@ -6,13 +6,13 @@ type ErrorCallback = Box<dyn Fn(LuaError) + Send + 'static>;
 
 #[derive(Clone)]
 pub(crate) struct ThreadErrorCallback {
-    inner: Rc<RefCell<Option<ErrorCallback>>>,
+    inner: Arc<RefCell<Option<ErrorCallback>>>,
 }
 
 impl ThreadErrorCallback {
     pub fn new() -> Self {
         Self {
-            inner: Rc::new(RefCell::new(None)),
+            inner: Arc::new(RefCell::new(None)),
         }
     }
 

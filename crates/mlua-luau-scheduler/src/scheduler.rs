@@ -2,7 +2,6 @@
 
 use std::{
     cell::Cell,
-    rc::{Rc, Weak as WeakRc},
     sync::{Arc, Weak as WeakArc},
     thread::panicking,
 };
@@ -49,9 +48,12 @@ pub struct Scheduler<'lua> {
     queue_defer: DeferredThreadQueue,
     error_callback: ThreadErrorCallback,
     result_map: ThreadResultMap,
-    status: Rc<Cell<Status>>,
+    status: Arc<Cell<Status>>,
     exit: Exit,
 }
+
+unsafe impl Send for Scheduler<'_> {}
+unsafe impl Sync for Scheduler<'_> {}
 
 impl<'lua> Scheduler<'lua> {
     /**
@@ -98,7 +100,7 @@ impl<'lua> Scheduler<'lua> {
         lua.set_app_data(result_map.clone());
         lua.set_app_data(exit.clone());
 
-        let status = Rc::new(Cell::new(Status::NotStarted));
+        let status = Arc::new(Cell::new(Status::NotStarted));
 
         Scheduler {
             lua,
@@ -286,7 +288,7 @@ impl<'lua> Scheduler<'lua> {
         */
         let local_exec = LocalExecutor::new();
         let main_exec = Arc::new(Executor::new());
-        let fut_queue = Rc::new(FuturesQueue::new());
+        let fut_queue = Arc::new(FuturesQueue::new());
 
         /*
             Store the main executor and queue in Lua, so that they may be used with LuaSchedulerExt.
@@ -299,12 +301,12 @@ impl<'lua> Scheduler<'lua> {
             "{ERR_METADATA_ALREADY_ATTACHED}"
         );
         assert!(
-            self.lua.app_data_ref::<WeakRc<FuturesQueue>>().is_none(),
+            self.lua.app_data_ref::<WeakArc<FuturesQueue>>().is_none(),
             "{ERR_METADATA_ALREADY_ATTACHED}"
         );
 
         self.lua.set_app_data(Arc::downgrade(&main_exec));
-        self.lua.set_app_data(Rc::downgrade(&fut_queue.clone()));
+        self.lua.set_app_data(Arc::downgrade(&fut_queue.clone()));
 
         /*
             Manually tick the Lua executor, while running under the main executor.
@@ -446,7 +448,7 @@ impl<'lua> Scheduler<'lua> {
             .remove_app_data::<WeakArc<Executor>>()
             .expect(ERR_METADATA_REMOVED);
         self.lua
-            .remove_app_data::<WeakRc<FuturesQueue>>()
+            .remove_app_data::<WeakArc<FuturesQueue>>()
             .expect(ERR_METADATA_REMOVED);
     }
 }

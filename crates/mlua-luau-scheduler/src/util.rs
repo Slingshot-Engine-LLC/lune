@@ -48,6 +48,9 @@ pub(crate) struct ThreadResult {
     inner: LuaResult<LuaRegistryKey>,
 }
 
+unsafe impl Send for ThreadResult {}
+unsafe impl Sync for ThreadResult {}
+
 impl ThreadResult {
     pub fn new(result: LuaResult<LuaMultiValue>, lua: &Lua) -> Self {
         Self {

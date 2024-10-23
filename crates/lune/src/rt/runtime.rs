@@ -1,11 +1,8 @@
 #![allow(clippy::missing_panics_doc)]
 
-use std::{
-    rc::Rc,
-    sync::{
-        atomic::{AtomicBool, Ordering},
-        Arc,
-    },
+use std::sync::{
+    atomic::{AtomicBool, Ordering},
+    Arc,
 };
 
 use mlua::prelude::*;
@@ -20,7 +17,7 @@ use super::{RuntimeError, RuntimeResult};
 // and inject the scheduler functions which will be used across runs.
 self_cell! {
     struct RuntimeInner {
-        owner: Rc<Lua>,
+        owner: Arc<Lua>,
         #[covariant]
         dependent: Scheduler,
     }
@@ -28,9 +25,9 @@ self_cell! {
 
 impl RuntimeInner {
     fn create() -> LuaResult<Self> {
-        let lua = Rc::new(Lua::new());
+        let lua = Arc::new(Lua::new());
 
-        lua.set_app_data(Rc::downgrade(&lua));
+        lua.set_app_data(Arc::downgrade(&lua));
         lua.set_app_data(Vec::<String>::new());
 
         Self::try_new(lua, |lua| {
@@ -101,6 +98,9 @@ impl RuntimeInner {
 pub struct Runtime {
     inner: RuntimeInner,
 }
+
+unsafe impl Send for Runtime {}
+unsafe impl Sync for Runtime {}
 
 impl Runtime {
     /**

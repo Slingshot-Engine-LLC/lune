@@ -1,6 +1,6 @@
 use std::{
     net::SocketAddr,
-    rc::{Rc, Weak},
+    sync::{Arc, Weak},
 };
 
 use hyper::server::conn::http1;
@@ -31,12 +31,12 @@ pub async fn serve<'lua>(
     let listener = TcpListener::bind(addr).await?;
 
     let (lua_svc, lua_inner) = {
-        let rc = lua
+        let arc = lua
             .app_data_ref::<Weak<Lua>>()
             .expect("Missing weak lua ref")
             .upgrade()
             .expect("Lua was dropped unexpectedly");
-        (Rc::clone(&rc), rc)
+        (Arc::clone(&arc), arc)
     };
 
     let keys = SvcKeys::new(lua, config.handle_request, config.handle_web_socket)?;

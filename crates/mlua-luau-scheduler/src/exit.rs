@@ -1,18 +1,21 @@
-use std::{cell::Cell, rc::Rc};
+use std::{cell::Cell, sync::Arc};
 
 use event_listener::Event;
 
 #[derive(Debug, Clone)]
 pub(crate) struct Exit {
-    code: Rc<Cell<Option<u8>>>,
-    event: Rc<Event>,
+    code: Arc<Cell<Option<u8>>>,
+    event: Arc<Event>,
 }
+
+unsafe impl Send for Exit {}
+unsafe impl Sync for Exit {}
 
 impl Exit {
     pub fn new() -> Self {
         Self {
-            code: Rc::new(Cell::new(None)),
-            event: Rc::new(Event::new()),
+            code: Arc::new(Cell::new(None)),
+            event: Arc::new(Event::new()),
         }
     }
 

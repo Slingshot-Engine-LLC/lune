@@ -15,6 +15,9 @@ pub struct ThreadId {
     inner: usize,
 }
 
+unsafe impl Send for ThreadId {}
+unsafe impl Sync for ThreadId {}
+
 impl From<&LuaThread<'_>> for ThreadId {
     fn from(thread: &LuaThread) -> Self {
         Self {

@@ -178,8 +178,7 @@ dependencies = [
 [[package]]
 name = "async-executor"
 version = "1.13.1"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "30ca9a001c1e8ba5149f91a74362376cc6bc5b919d92d988668657bd570bdcec"
+source = "git+https://github.com/Slingshot-Engine-LLC/async-executor.git?branch=server#438fd811ddd5758d54638f2ccd19ab2b90a76d02"
 dependencies = [
  "async-task",
  "concurrent-queue",
@@ -1803,8 +1802,7 @@ dependencies = [
 [[package]]
 name = "mlua"
 version = "0.9.9"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "d111deb18a9c9bd33e1541309f4742523bfab01d276bfa9a27519f6de9c11dc7"
+source = "git+https://github.com/Slingshot-Engine-LLC/mlua.git?branch=server#0e3d02cf4ae2f8019ce149fdcd55982cf7f32d59"
 dependencies = [
  "bstr",
  "erased-serde",
@@ -1813,7 +1811,7 @@ dependencies = [
  "mlua-sys",
  "num-traits",
  "once_cell",
- "rustc-hash 2.0.0",
+ "rustc-hash",
  "serde",
  "serde-value",
 ]
@@ -1831,7 +1829,6 @@ dependencies = [
  "event-listener 4.0.3",
  "futures-lite",
  "mlua",
- "rustc-hash 1.1.0",
  "tracing",
  "tracing-subscriber",
  "tracing-tracy",
@@ -1839,9 +1836,8 @@ dependencies = [
 
 [[package]]
 name = "mlua-sys"
-version = "0.6.3"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "ebe026d6bd1583a9cf9080e189030ddaea7e6f5f0deb366a8e26f8a26c4135b8"
+version = "0.6.2"
+source = "git+https://github.com/Slingshot-Engine-LLC/mlua.git?branch=server#0e3d02cf4ae2f8019ce149fdcd55982cf7f32d59"
 dependencies = [
  "cc",
  "cfg-if",
@@ -2494,12 +2490,6 @@ name = "rustc-demangle"
 version = "0.1.24"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "719b953e2095829ee67db738b3bfa9fa368c94900df327b3f07fe6e794d2fe1f"
-
-[[package]]
-name = "rustc-hash"
-version = "1.1.0"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "08d43f7aa6b08d49f382cde6a7982047c3426db949b1424bc4b7ec9ae12c6ce2"
 
 [[package]]
 name = "rustc-hash"

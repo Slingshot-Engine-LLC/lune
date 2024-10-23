@@ -8,7 +8,6 @@ use std::{
     },
     path::MAIN_SEPARATOR,
     process::Stdio,
-    rc::Rc,
     sync::Arc,
 };
 
@@ -191,7 +190,7 @@ fn process_create(
     spawn_options.stdio = ProcessSpawnOptionsStdio::default();
 
     let (code_tx, code_rx) = tokio::sync::broadcast::channel(4);
-    let code_rx_rc = Rc::new(RefCell::new(code_rx));
+    let code_rx_rc = Arc::new(RefCell::new(code_rx));
 
     let child = spawn_command(program, args, spawn_options)?;
 
@@ -232,7 +231,7 @@ fn process_create(
             async move { Ok(child_arc_clone.write().await.kill().await?) }
         })?
         .with_async_function("status", move |lua, ()| {
-            let code_rx_rc_clone = Rc::clone(&code_rx_rc);
+            let code_rx_rc_clone = Arc::clone(&code_rx_rc);
             async move {
                 // Exit code of 9 corresponds to SIGKILL, which should be the only case where
                 // the receiver gets suddenly dropped

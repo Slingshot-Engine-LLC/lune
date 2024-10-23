@@ -1,27 +1,31 @@
 #![allow(clippy::inline_always)]
 
-use std::{cell::RefCell, rc::Rc};
+use std::{
+    cell::RefCell,
+    collections::{HashMap, HashSet},
+    sync::Arc,
+};
 
 use event_listener::Event;
-// NOTE: This is the hash algorithm that mlua also uses, so we
-// are not adding any additional dependencies / bloat by using it.
-use rustc_hash::{FxHashMap, FxHashSet};
 
 use crate::{thread_id::ThreadId, util::ThreadResult};
 
 #[derive(Clone)]
 pub(crate) struct ThreadResultMap {
-    tracked: Rc<RefCell<FxHashSet<ThreadId>>>,
-    results: Rc<RefCell<FxHashMap<ThreadId, ThreadResult>>>,
-    events: Rc<RefCell<FxHashMap<ThreadId, Rc<Event>>>>,
+    tracked: Arc<RefCell<HashSet<ThreadId>>>,
+    results: Arc<RefCell<HashMap<ThreadId, ThreadResult>>>,
+    events: Arc<RefCell<HashMap<ThreadId, Arc<Event>>>>,
 }
+
+unsafe impl Send for ThreadResultMap {}
+unsafe impl Sync for ThreadResultMap {}
 
 impl ThreadResultMap {
     pub fn new() -> Self {
         Self {
-            tracked: Rc::new(RefCell::new(FxHashSet::default())),
-            results: Rc::new(RefCell::new(FxHashMap::default())),
-            events: Rc::new(RefCell::new(FxHashMap::default())),
+            tracked: Arc::new(RefCell::new(HashSet::default())),
+            results: Arc::new(RefCell::new(HashMap::default())),
+            events: Arc::new(RefCell::new(HashMap::default())),
         }
     }
 
@@ -48,7 +52,7 @@ impl ThreadResultMap {
         if !self.results.borrow().contains_key(&id) {
             let listener = {
                 let mut events = self.events.borrow_mut();
-                let event = events.entry(id).or_insert_with(|| Rc::new(Event::new()));
+                let event = events.entry(id).or_insert_with(|| Arc::new(Event::new()));
                 event.listen()
             };
             listener.await;

@@ -1,9 +1,7 @@
 #![allow(unused_imports)]
 #![allow(clippy::missing_errors_doc)]
 
-use std::{
-    cell::Cell, future::Future, process::ExitCode, rc::Weak as WeakRc, sync::Weak as WeakArc,
-};
+use std::{cell::Cell, future::Future, process::ExitCode, sync::Weak as WeakArc};
 
 use async_executor::{Executor, Task};
 use mlua::prelude::*;
@@ -354,7 +352,7 @@ impl<'lua> LuaSpawnExt<'lua> for Lua {
         F: Future<Output = ()> + 'static,
     {
         let queue = self
-            .app_data_ref::<WeakRc<FuturesQueue>>()
+            .app_data_ref::<WeakArc<FuturesQueue>>()
             .expect("tasks can only be spawned within an active scheduler")
             .upgrade()
             .expect("executor was dropped");
