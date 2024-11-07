@@ -149,7 +149,7 @@ impl Runtime {
         This function will return an error if the script fails to run.
     */
     pub async fn run(
-        &mut self,
+        &self,
         script_name: impl AsRef<str>,
         script_contents: impl AsRef<[u8]>,
     ) -> RuntimeResult<(u8, Vec<LuaValue>)> {
