@@ -92,6 +92,15 @@ impl RuntimeInner {
     }
 }
 
+
+impl Clone for RuntimeInner {
+    fn clone(&self) -> Self {
+        Self::try_new(Arc::clone(self.borrow_owner()), |lua| {
+            Ok(Scheduler::new(lua))
+        }).expect("Failed to clone runtime")
+    }
+}
+
 /**
     A Lune runtime.
 */
