@@ -176,4 +176,8 @@ impl Runtime {
             main_thread_res.into_vec(),
         ))
     }
+
+    pub fn get_lua(&self) -> &Lua {
+        self.inner.lua()
+    }
 }
