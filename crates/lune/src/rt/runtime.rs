@@ -105,7 +105,7 @@ impl Clone for RuntimeInner {
     A Lune runtime.
 */
 pub struct Runtime {
-    inner: RuntimeInner,
+    inner: Arc<RuntimeInner>,
 }
 
 unsafe impl Send for Runtime {}
@@ -121,7 +121,7 @@ impl Runtime {
     #[allow(clippy::new_without_default)]
     pub fn new() -> Self {
         Self {
-            inner: RuntimeInner::create().expect("Failed to create runtime"),
+            inner: Arc::new(RuntimeInner::create().expect("Failed to create runtime")),
         }
     }
 
